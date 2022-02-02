@@ -30,14 +30,14 @@ void turnRight()
 {
   Motor1.moveMotor(2.55 * 100);
   Motor2.moveMotor(-2.55 * 100);
-  delay(500);
+  delay(300);
 }
 
 void turnLeft()
 {
   Motor1.moveMotor(-2.55 * 100);
   Motor2.moveMotor(2.55 * 100);
-  delay(500);
+  delay(300);
 }
 
 void goForward(int time)
@@ -64,9 +64,9 @@ void loop()
   _loop();
   if (GamePad.isPressed(0))
   {
-    for (int i = 10; i >= 0; i--)
+    for (int i = 0; i >= 0; i--)
     {
-      traceRect(2000);
+      traceRect(1000);
     }
   }
   else if (GamePad.isPressed(3))
