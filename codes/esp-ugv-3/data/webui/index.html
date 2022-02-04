@@ -9,6 +9,7 @@
   </head>
   <body>
     <div id="root"></div>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
     <script src="https://unpkg.com/react@16/umd/react.development.js" crossorigin></script>
     <script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js" crossorigin></script>
@@ -44,6 +45,8 @@
               onMouseDown={props.onHold}
               onMouseUp={props.onRelease}
               onMouseLeave={props.onRelease}
+              onTouchStart={props.onHold}
+              onTouchEnd={props.onRelease}
               style={{
                 display: "flex",
                 flexDirection: "column",
@@ -96,7 +99,7 @@
               justifyContent: "center",
               alignItems: "center",
               width: "100vw",
-              height: "100vh",
+              height: "80vh",
             }}>
             <Typography variant="h3" padding={4}>
               UGV Controller
