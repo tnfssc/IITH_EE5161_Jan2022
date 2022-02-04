@@ -13,6 +13,7 @@
 ### Plotting the path of the UGV
 
 - [Youtube link - https://youtu.be/wDQQI6Ye5tA](https://youtu.be/wDQQI6Ye5tA) | [mirror](https://y.com.cm/watch?v=wDQQI6Ye5tA)
+- [How to plot? (manual)](https://github.com/tnfssc/IITH_EE5161_Jan2022/blob/main/PLOTTING_TRACES/README.md)
 
 ![all_the_plots](https://github.com/tnfssc/IITH_EE5161_Jan2022/raw/main/all_the_plots.png)
 
