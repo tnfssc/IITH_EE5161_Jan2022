@@ -3,53 +3,35 @@
 #include <WiFi.h>
 #include <esp32PWMUtilities.h>
 #include <ESPAsyncWebServer.h>
-#include <DabbleESP32.h>
 
-Motor Motor1;
+const char *ssid = "beingAlien";
+const char *password = "1234qwer!@#$QWER";
 
-Motor Motor2;
-void _setup() {
-  Motor1.attach(14, 16, 17);
+AsyncWebServer server(80);
 
-  Motor2.attach(15, 18, 19);
-
-  Dabble.begin("MyEsp32");
-}
-
-void _loop() {
-  Dabble.processInput();
-}
-
-void setup() {
-  _setup();
-}
-
-void loop() {
-  _loop();
-  if (GamePad.isPressed(0)) {
-    Motor1.moveMotor(2.55 * 100);
-    Motor2.moveMotor(2.55 * 100);
+void setup()
+{
+  Serial.begin(115200);
+  if (!SPIFFS.begin())
+  {
+    Serial.println("An Error has occurred while mounting SPIFFS");
+    return;
   }
-  else {
-    if (GamePad.isPressed(1)) {
-      Motor1.moveMotor(-2.55 * 100);
-      Motor2.moveMotor(-2.55 * 100);
-    }
-    else {
-      if (GamePad.isPressed(3)) {
-        Motor1.moveMotor(2.55 * 100);
-        Motor2.moveMotor(-2.55 * 100);
-      }
-      else {
-        if (GamePad.isPressed(2)) {
-          Motor1.moveMotor(-2.55 * 100);
-          Motor2.moveMotor(2.55 * 100);
-        }
-        else {
-          Motor1.lockMotor();
-          Motor2.lockMotor();
-        }
-      }
-    }
+  WiFi.begin(ssid, password);
+  while (WiFi.status() != WL_CONNECTED)
+  {
+    delay(1000);
+    Serial.println("Connecting to WiFi..");
   }
+  Serial.println(WiFi.localIP());
+
+  server.on("/", HTTP_GET, [](AsyncWebServerRequest *request)
+            { request->send(SPIFFS, "/webui/build/index.html", "text/html"); });
+  server.on("/static/js/main.js", HTTP_GET, [](AsyncWebServerRequest *request)
+            { request->send(SPIFFS, "/webui/build/static/js/main.js", "text/javascript"); });
+  server.begin();
+}
+
+void loop()
+{
 }
