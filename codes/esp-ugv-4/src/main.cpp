@@ -72,6 +72,8 @@ void setup()
   }
   WiFi.mode(WIFI_STA);
   WiFi.begin(ssid, password);
+
+  Serial.println("Connecting to WiFi...");
   if (WiFi.waitForConnectResult() != WL_CONNECTED)
   {
     Serial.println("WiFi failed");
@@ -88,23 +90,23 @@ void setup()
   // Directions
   server.on("/forward", HTTP_GET, [](AsyncWebServerRequest *request)
             {
-              moveForward();
-              request->send(200, "text/plain", "Done!"); });
+                moveForward();
+                request->send(200, "text/plain", "Done!"); });
 
   server.on("/backward", HTTP_GET, [](AsyncWebServerRequest *request)
             {
-              moveBackward();
-              request->send(200, "text/plain", "Done!"); });
+                moveBackward();
+                request->send(200, "text/plain", "Done!"); });
 
   server.on("/left", HTTP_GET, [](AsyncWebServerRequest *request)
             {
-              moveLeft();
-              request->send(200, "text/plain", "Done!"); });
+                moveLeft();
+                request->send(200, "text/plain", "Done!"); });
 
   server.on("/right", HTTP_GET, [](AsyncWebServerRequest *request)
             {
-              moveRight();
-              request->send(200, "text/plain", "Done!"); });
+                moveRight();
+                request->send(200, "text/plain", "Done!"); });
 
   server.onNotFound(notFound);
 
@@ -119,7 +121,8 @@ void setup()
       else // U_SPIFFS
         type = "filesystem";
 
-      // NOTE: if updating SPIFFS this would be the place to unmount SPIFFS using SPIFFS.end()
+      server.end();
+      SPIFFS.end();
       Serial.println("Start updating " + type); })
       .onEnd([]()
              { Serial.println("\nEnd"); })
@@ -132,11 +135,14 @@ void setup()
       else if (error == OTA_BEGIN_ERROR) Serial.println("Begin Failed");
       else if (error == OTA_CONNECT_ERROR) Serial.println("Connect Failed");
       else if (error == OTA_RECEIVE_ERROR) Serial.println("Receive Failed");
-      else if (error == OTA_END_ERROR) Serial.println("End Failed"); });
+      else if (error == OTA_END_ERROR) Serial.println("End Failed"); })
+      .setPort(3232);
 
   ArduinoOTA.begin();
 }
 
 void loop()
 {
+  ArduinoOTA.handle();
+  delay(100);
 }

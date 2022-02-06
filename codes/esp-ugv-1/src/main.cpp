@@ -20,6 +20,8 @@ void _loop() {
 }
 
 void setup() {
+  Serial.begin(9600);
+  Serial.println("Booting!");
   _setup();
 }
 
