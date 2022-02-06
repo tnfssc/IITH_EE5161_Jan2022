@@ -2,6 +2,11 @@
 
 ## Unmanned Ground Vehicle
 
+### [Fail] Flashing the ESP chip using OTA (ESPOTA)
+
+- [Youtube link - https://youtu.be/n9m3_bAtnvM](https://youtu.be/n9m3_bAtnvM) | [mirror](https://y.com.cm/watch?v=n9m3_bAtnvM)
+- I am able to ping the chip, get the fetch the web UI, control it using the web UI. However, flashing doesn't seem to work.
+
 ### Controlling the UGV using Web UI
 
 - [Youtube link - https://youtu.be/O5CFv6l_N64](https://youtu.be/O5CFv6l_N64) | [mirror](https://y.com.cm/watch?v=O5CFv6l_N64)
