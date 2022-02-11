@@ -22,22 +22,32 @@ static float offset_z = 0;
 
 static const float degrees_90 = 1.21;
 
+static long gyro_time = 0;
+
 void calibrate_gyro()
 {
   int times = 10;
   float offsets[times];
+  long gyro_times[times];
   int t = times;
   while (t--)
   {
     sensors_event_t g;
+    long cur = micros();
     mpu_gyro->getEvent(&g);
+    cur -= micros();
     offsets[t - 1] = g.gyro.z;
+    gyro_times[t - 1] = cur;
     delay(10);
   }
   times--;
   for (int i = 0; i < times; i++)
+  {
     offset_z += offsets[i];
+    gyro_time += gyro_times[i];
+  }
   offset_z /= times;
+  gyro_time /= times;
 }
 
 void setup(void)
@@ -67,6 +77,7 @@ void update_current_angle(int time = loop_ms)
   mpu_gyro->getEvent(&g);
   current_angle += (g.gyro.z - offset_z) * time / 1000;
   current_angle = fmod(current_angle, degrees_90 * 4);
+  Serial.println(current_angle);
 }
 
 // dir = 1 for forward, -1 for backward
@@ -84,18 +95,32 @@ void stop()
   Motor2.lockMotor();
 }
 
-void turn_right()
+void rotate_right()
 {
   Motor1.moveMotor(2.55 * 100);
   Motor2.moveMotor(-2.55 * 100);
-  Serial.println("Turning right");
+  Serial.println("Rotating right");
+}
+
+void rotate_left()
+{
+  Motor1.moveMotor(-2.55 * 100);
+  Motor2.moveMotor(2.55 * 100);
+  Serial.println("Rotating left");
 }
 
 void turn_left()
 {
-  Motor1.moveMotor(-2.55 * 100);
   Motor2.moveMotor(2.55 * 100);
+  Motor1.lockMotor();
   Serial.println("Turning left");
+}
+
+void turn_right()
+{
+  Motor1.moveMotor(2.55 * 100);
+  Motor2.lockMotor();
+  Serial.println("Turning right");
 }
 
 bool compare(double value1, double value2, int precision)
@@ -104,23 +129,26 @@ bool compare(double value1, double value2, int precision)
   return !eq;
 }
 
-// dir = 1 for right, -1 for left
-void turn_90(int dir)
+void go_straight_line()
 {
-  auto _original_angle = current_angle;
-  while (compare(double(current_angle), double(_original_angle + dir * degrees_90), 2))
+  int l = 500;
+  while (l -= 2)
   {
-    Serial.println("Current angle: " + String(current_angle));
-    Serial.println("Required angle: " + String(_original_angle + dir * degrees_90));
-    if (current_angle > _original_angle + dir * degrees_90)
-      turn_left();
-    else if (current_angle < _original_angle + dir * degrees_90)
-      turn_right();
+    if (compare(current_angle, 0, 2))
+    {
+      if (current_angle > 0)
+        turn_left();
+      else
+        turn_right();
+      l++;
+    }
     else
-      break;
-    update_current_angle();
-    delay(10);
+    {
+      move(1);
+    }
+    delayMicroseconds(loop_ms * 1000);
     stop();
+    update_current_angle();
   }
 }
 
@@ -132,20 +160,32 @@ void process_dabble_input()
   else if (GamePad.isDownPressed())
     move(-1);
   else if (GamePad.isLeftPressed())
-    turn_90(-1);
+    rotate_left();
   else if (GamePad.isRightPressed())
-    turn_90(1);
+    rotate_right();
   else if (GamePad.isCrossPressed())
   {
-    Serial.println("Rectangle");
+    Serial.println("Go Straight Line");
+    go_straight_line();
+  }
+  else if (GamePad.isTrianglePressed())
+  {
+    move(1);
+    delay(1000);
+    move(-1);
+    delay(1000);
+    stop();
+  }
+  else if (GamePad.isCirclePressed())
+  {
+    Serial.println("Reset angle");
+    current_angle = 0;
   }
   stop();
 }
 
 void loop()
 {
-  update_current_angle();
   process_dabble_input();
-  // Serial.println("Current angle: " + String(current_angle));
   delay(loop_ms);
 }
