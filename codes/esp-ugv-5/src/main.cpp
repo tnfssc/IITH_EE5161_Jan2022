@@ -146,9 +146,9 @@ void go_straight_line()
     {
       move(1);
     }
-    delayMicroseconds(loop_ms * 1000);
-    stop();
+    delayMicroseconds(loop_ms * 1000 - gyro_time);
     update_current_angle();
+    stop();
   }
 }
 
