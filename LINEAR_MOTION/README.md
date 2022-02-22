@@ -1,14 +1,14 @@
-# Linear Motion for the UGV using feedback from the MPU6050 sensor
+# Linear Motion for the UGV using feedback from the `MPU6050` sensor
 
 ## Prerequisites
 
 The following are the prerequisites for this manual:
 
 - A fully assembled UGV
-- A Gyro sensor. (I am using the MPU6050)
-- Few wires to connect the MPU6050 to the UGV.
+- A Gyro sensor. (I am using the `MPU6050`)
+- Few wires to connect the `MPU6050` to the UGV.
 
-## More about the sensor MPU6050
+## About the sensor `MPU6050`
 
 The sensor can provide the following details:
 
@@ -32,7 +32,7 @@ You need the following library to use the sensor. Just add the following line to
 lib_deps = adafruit/Adafruit MPU6050@^2.0.6
 ```
 
-## Basic usage from the sensor
+## Basic usage of the sensor
 
 Here is a sample code for getting data from the sensor.
 
@@ -73,10 +73,6 @@ void loop()
 The sensor could have some offset. We should calibrate the sensor before using it. We can do this by taking a few measurements and averaging them for an approximate offset in x, y and z directions.
 
 The further measurements should subtract the offset value to get the accurate reading from the sensor.
-
-<!-- 1. Describe each dumb function in the code.
-2. Explain `calibrate_gyro()` and `gyro_time`.
-3. Describe the not dumb function in the code (`go_straight_line()`). Also, explain `10ms` thingy. -->
 
 ## The Functions
 
