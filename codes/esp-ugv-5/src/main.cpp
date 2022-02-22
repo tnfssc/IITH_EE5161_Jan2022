@@ -132,7 +132,7 @@ bool compare(double value1, double value2, int precision)
 void go_straight_line()
 {
   int l = 500;
-  while (l -= 2)
+  while (l -= 2 > 0)
   {
     if (compare(current_angle, 0, 2))
     {
