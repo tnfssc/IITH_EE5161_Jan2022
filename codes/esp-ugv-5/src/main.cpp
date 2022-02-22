@@ -85,7 +85,6 @@ void move(int dir)
 {
   Motor1.moveMotor(dir * 2.55 * 100);
   Motor2.moveMotor(dir * 2.55 * 100);
-  delay(10);
   Serial.println("Moving " + String(dir));
 }
 
