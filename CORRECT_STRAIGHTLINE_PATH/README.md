@@ -1,4 +1,4 @@
-# Linear Motion for the UGV using feedback from the `MPU6050` sensor
+# Basic way to correct the UGV's straight line path
 
 ## Prerequisites
 
