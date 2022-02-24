@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
+    <!-- <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests"> -->
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
     <title>UGV controller</title>
@@ -53,7 +53,7 @@
       };
       const sendMovement = async (address, direction) => {
         if (!urls[direction]) alert("Invalid direction!");
-        const res = await fetch(address + urls[direction]);
+        const res = await fetch(address + urls[direction], { method: "POST", mode: "no-cors" });
         if (res.status === "200") return true;
         return false;
       };
