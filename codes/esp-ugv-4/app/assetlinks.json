@@ -1,0 +1,6 @@
+[{
+        "relation": ["delegate_permission/common.handle_all_urls"],
+        "target" : { "namespace": "android_app", "package_name": "app.sharath.ugvcontroller",
+                     "sha256_cert_fingerprints": ["4C:81:6D:85:29:9F:3E:C3:84:4E:54:1A:86:10:5A:2A:B8:A2:0E:EF:F9:40:99:25:01:71:02:C0:7E:2C:34:1A"] }
+      }
+]
