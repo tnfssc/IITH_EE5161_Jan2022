@@ -1,23 +1,41 @@
 <!DOCTYPE html>
-
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <title>UGV Controller</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <title>UGV controller</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <!-- Icons and Colors -->
+    <link rel="apple-touch-icon" sizes="180x180" href="./apple-touch-icon.png" />
+    <link rel="icon" type="image/png" sizes="32x32" href="./favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="./favicon-16x16.png" />
+    <link rel="manifest" href="./manifest.json" />
+    <link rel="mask-icon" href="./safari-pinned-tab.svg" color="#000000" />
+    <link rel="shortcut icon" href="./favicon.ico" />
+    <meta name="msapplication-TileColor" content="#000000" />
+    <meta name="msapplication-TileImage" content="./mstile-144x144.png" />
+    <meta name="msapplication-config" content="./browserconfig.xml" />
+    <meta name="theme-color" content="#000000" />
+
+    <!-- SEO and Social Sharing and SEO -->
     <meta name="description" content="UGV controller" />
     <meta name="author" content="tnfssc" />
-    <meta charSet="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta httpEquiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="description" content="Description" />
-    <meta name="keywords" content="Keywords" />
-    <link rel="manifest" href="/manifest.json" />
-    <link href="/icons/dark/favicon-16x16.png" rel="icon" type="image/png" sizes="16x16" />
-    <link href="/icons/dark/favicon-32x32.png" rel="icon" type="image/png" sizes="32x32" />
-    <link rel="icon" href="/favicon.ico" />
-    <link rel="apple-touch-icon" href="/icons/dark/apple-touch-icon.png"></link>
-    <meta name="theme-color" content="#000000" />
+
+    <!-- Styles -->
+    <link rel="stylesheet" href="style.css" />
+
+    <!-- Javscript -->
+    <script>
+      if ("serviceWorker" in navigator) {
+        window.addEventListener("load", () => {
+          navigator.serviceWorker && navigator.serviceWorker.register("./sw.js");
+        });
+      }
+    </script>
+    <script defer src="./main.js"></script>
   </head>
+
   <body>
     <div id="root"></div>
     <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
@@ -38,15 +56,25 @@
         left: "/left",
         right: "/right",
       };
-      const sendMovement = async direction => {
+      const sendMovement = async (address, direction) => {
         if (!urls[direction]) alert("Invalid direction!");
-        const res = await fetch(urls[direction]);
+        const res = await fetch(address + urls[direction]);
         if (res.status === "200") return true;
         return false;
       };
 
-      const { CssBaseline, ThemeProvider, Typography, Container, createTheme, Box, Grid, Button, ButtonBase } =
-        MaterialUI;
+      const {
+        CssBaseline,
+        ThemeProvider,
+        Typography,
+        Container,
+        createTheme,
+        Box,
+        Grid,
+        Button,
+        ButtonBase,
+        TextField,
+      } = MaterialUI;
       const GridItem = props => (
         <Grid item xs={4}>
           {props.children ? (
@@ -75,13 +103,14 @@
       );
       const App = () => {
         const [holding, setHolding] = React.useState(false);
+        const [address, setAddress] = React.useState("http://127.0.0.1:80");
         const [direction, setDirection] = React.useState("");
         const intervalRef = React.useRef(0);
 
         React.useEffect(() => {
           if (holding)
             intervalRef.current = setInterval(() => {
-              sendMovement(direction);
+              sendMovement(address, direction);
             }, 250);
           else clearInterval(intervalRef.current);
           () => clearInterval(intervalRef.current);
@@ -114,6 +143,13 @@
             <Typography variant="h3" padding={4}>
               UGV Controller
             </Typography>
+            <TextField
+              placeholder="made by Sharath"
+              label="UGV's address"
+              value={address}
+              onChange={e => setAddress(e.target.value)}
+              style={{ marginBottom: "1rem" }}
+            />
             <Box>
               <Grid container spacing={2}>
                 <GridItem></GridItem>
@@ -147,16 +183,6 @@
         </ThemeProvider>,
         document.getElementById("root")
       );
-      if ('serviceWorker' in navigator) {
-        navigator.serviceWorker
-          .register('./sw.js', { scope: './' })
-          .then(function(registration) {
-        console.log("Service Worker Registered");
-        })
-        .catch(function(err) {
-          console.log("Service Worker Failed to Register", err);
-        });
-      }
     </script>
   </body>
 </html>
