@@ -1,53 +1,108 @@
 #include <Adafruit_MPU6050.h>
 #include <Adafruit_Sensor.h>
-#include <Wire.h>
 #include <WiFi.h>
-#include <esp32PWMUtilities.h>
-#include <DabbleESP32.h>
+#include <AsyncUDP.h>
 
-Motor Motor1;
-Motor Motor2;
+const char *ssid = "beingHuman";
+const char *password = "1234qwer!@#$QWER";
 
-void initialize_motors()
+const auto server_ip = IPAddress(192, 168, 0, 101);
+const auto server_port = 8989;
+
+void initialize_WiFi()
 {
-  Motor1.attach(14, 16, 17);
-  Motor2.attach(15, 18, 19);
-  Dabble.begin("UGV");
+  WiFi.begin(ssid, password);
+  while (WiFi.status() != WL_CONNECTED)
+  {
+    delay(500);
+    Serial.print(".");
+  }
+  Serial.println("");
+  Serial.println("WiFi connected");
+  Serial.println("IP address: ");
+  Serial.println(WiFi.localIP());
 }
 
 Adafruit_MPU6050 mpu;
-Adafruit_Sensor *mpu_gyro;
 
-static float offset_z = 0;
+static sensors_vec_t gyro_offsets;
+static sensors_vec_t accelero_offsets;
 
-static const float degrees_90 = 1.21;
-
-static long gyro_time = 0;
-
-void calibrate_gyro()
+void calibrate()
 {
+  Serial.println("Calibrating...");
   int times = 10;
-  float offsets[times];
-  long gyro_times[times];
+  sensors_vec_t a_offsets[times];
+  sensors_vec_t g_offsets[times];
   int t = times;
   while (t--)
   {
+    sensors_event_t a;
     sensors_event_t g;
-    long cur = micros();
-    mpu_gyro->getEvent(&g);
-    cur -= micros();
-    offsets[t - 1] = g.gyro.z;
-    gyro_times[t - 1] = cur;
-    delay(10);
+    sensors_event_t _t;
+    mpu.getEvent(&a, &g, &_t);
+    g_offsets[t - 1].x = g.gyro.x;
+    g_offsets[t - 1].y = g.gyro.y;
+    g_offsets[t - 1].z = g.gyro.z;
+    a_offsets[t - 1].x = a.acceleration.x;
+    a_offsets[t - 1].y = a.acceleration.y;
+    a_offsets[t - 1].z = a.acceleration.z;
+    delay(100);
+    Serial.print(".");
   }
+  Serial.println("");
   times--;
   for (int i = 0; i < times; i++)
   {
-    offset_z += offsets[i];
-    gyro_time += gyro_times[i];
+    gyro_offsets.x += g_offsets[i].x;
+    gyro_offsets.y += g_offsets[i].y;
+    gyro_offsets.z += g_offsets[i].z;
+    accelero_offsets.x += a_offsets[i].x;
+    accelero_offsets.y += a_offsets[i].y;
+    accelero_offsets.z += a_offsets[i].z;
   }
-  offset_z /= times;
-  gyro_time /= times;
+  gyro_offsets.x /= times;
+  gyro_offsets.y /= times;
+  gyro_offsets.z /= times;
+  accelero_offsets.x /= times;
+  accelero_offsets.y /= times;
+  accelero_offsets.z /= times;
+}
+
+AsyncUDP udp;
+
+void connect_udp()
+{
+  if (!udp.connected())
+  {
+    if (!udp.connect(server_ip, server_port))
+      Serial.println("UDP connect failed");
+  }
+}
+
+void send_data_to_server()
+{
+  sensors_event_t a;
+  sensors_event_t g;
+  sensors_event_t _t;
+  mpu.getEvent(&a, &g, &_t);
+  char data[127];
+  const int time = micros();
+  sprintf(
+      data,
+      "Time: %d\tAcceleration: %f, %f, %f\tGyro: %f, %f, %f\n",
+      time,
+      a.acceleration.x - accelero_offsets.x,
+      a.acceleration.y - accelero_offsets.y,
+      a.acceleration.z - accelero_offsets.z,
+      g.gyro.x - gyro_offsets.x,
+      g.gyro.y - gyro_offsets.y,
+      g.gyro.z - gyro_offsets.z);
+  connect_udp();
+  if (udp.connected())
+  {
+    udp.print(data);
+  }
 }
 
 void setup(void)
@@ -59,132 +114,24 @@ void setup(void)
     Serial.println("Failed to find MPU6050 chip");
   mpu.setGyroRange(MPU6050_RANGE_500_DEG);
   mpu.setFilterBandwidth(MPU6050_BAND_21_HZ);
-  mpu_gyro = mpu.getGyroSensor();
+  mpu.setAccelerometerRange(MPU6050_RANGE_2_G);
   delay(100);
-  calibrate_gyro();
-  Serial.println("Calibration done. Offset: " + String(offset_z));
+  calibrate();
+  char data[127];
+  sprintf(data, "Gyro offsets: %f, %f, %f\n", gyro_offsets.x, gyro_offsets.y, gyro_offsets.z);
+  Serial.println(data);
+  sprintf(data, "Accelero offsets: %f, %f, %f\n", accelero_offsets.x, accelero_offsets.y, accelero_offsets.z);
+  Serial.println(data);
   delay(100);
-  initialize_motors();
+  initialize_WiFi();
+  connect_udp();
+  Serial.println("Setup done");
 }
-
-float current_angle = 0;
 
 const int loop_ms = 10;
 
-void update_current_angle(int time = loop_ms)
-{
-  sensors_event_t g;
-  mpu_gyro->getEvent(&g);
-  current_angle += (g.gyro.z - offset_z) * time / 1000;
-  current_angle = fmod(current_angle, degrees_90 * 4);
-  Serial.println(current_angle);
-}
-
-// dir = 1 for forward, -1 for backward
-void move(int dir)
-{
-  Motor1.moveMotor(dir * 2.55 * 100);
-  Motor2.moveMotor(dir * 2.55 * 100);
-  Serial.println("Moving " + String(dir));
-}
-
-void stop()
-{
-  Motor1.lockMotor();
-  Motor2.lockMotor();
-}
-
-void rotate_right()
-{
-  Motor1.moveMotor(2.55 * 100);
-  Motor2.moveMotor(-2.55 * 100);
-  Serial.println("Rotating right");
-}
-
-void rotate_left()
-{
-  Motor1.moveMotor(-2.55 * 100);
-  Motor2.moveMotor(2.55 * 100);
-  Serial.println("Rotating left");
-}
-
-void turn_left()
-{
-  Motor2.moveMotor(2.55 * 100);
-  Motor1.lockMotor();
-  Serial.println("Turning left");
-}
-
-void turn_right()
-{
-  Motor1.moveMotor(2.55 * 100);
-  Motor2.lockMotor();
-  Serial.println("Turning right");
-}
-
-bool compare(double value1, double value2, int precision)
-{
-  bool eq = std::abs(value1 - value2) < std::pow(10, -precision);
-  return !eq;
-}
-
-void go_straight_line()
-{
-  int l = 500;
-  while (l -= 2 > 0)
-  {
-    if (compare(current_angle, 0, 2))
-    {
-      if (current_angle > 0)
-        turn_left();
-      else
-        turn_right();
-      l++;
-    }
-    else
-    {
-      move(1);
-    }
-    delayMicroseconds(loop_ms * 1000 - gyro_time);
-    update_current_angle();
-    stop();
-  }
-}
-
-void process_dabble_input()
-{
-  Dabble.processInput();
-  if (GamePad.isUpPressed())
-    move(1);
-  else if (GamePad.isDownPressed())
-    move(-1);
-  else if (GamePad.isLeftPressed())
-    rotate_left();
-  else if (GamePad.isRightPressed())
-    rotate_right();
-  else if (GamePad.isCrossPressed())
-  {
-    Serial.println("Go Straight Line");
-    go_straight_line();
-  }
-  else if (GamePad.isTrianglePressed())
-  {
-    move(1);
-    delay(1000);
-    move(-1);
-    delay(1000);
-    stop();
-  }
-  else if (GamePad.isCirclePressed())
-  {
-    Serial.println("Reset angle");
-    current_angle = 0;
-  }
-  stop();
-}
-
 void loop()
 {
-  process_dabble_input();
+  send_data_to_server();
   delay(loop_ms);
 }
