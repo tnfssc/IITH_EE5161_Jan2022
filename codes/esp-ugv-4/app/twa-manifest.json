@@ -19,8 +19,8 @@
     "path": "/home/tnfssc/Coding/UAV/IITH_EE5161_Jan2022/codes/esp-ugv-4/app/android.keystore",
     "alias": "android"
   },
-  "appVersionName": "2",
-  "appVersionCode": 2,
+  "appVersionName": "4",
+  "appVersionCode": 4,
   "shortcuts": [],
   "generatorApp": "bubblewrap-cli",
   "webManifestUrl": "https://ugv-controller.vercel.app/manifest.json",
@@ -39,5 +39,5 @@
   ],
   "additionalTrustedOrigins": [],
   "retainedBundles": [],
-  "appVersion": "2"
+  "appVersion": "4"
 }
