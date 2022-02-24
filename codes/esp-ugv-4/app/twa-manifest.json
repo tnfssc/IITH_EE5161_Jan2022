@@ -1,5 +1,5 @@
 {
-  "packageId": "app.sharath.ugvcontroller",
+  "packageId": "app.vercel.ugv_controller.twa",
   "host": "ugv-controller.vercel.app",
   "name": "UGV controller",
   "launcherName": "UGV",
@@ -12,8 +12,8 @@
   "backgroundColor": "#000000",
   "enableNotifications": true,
   "startUrl": "/?utm_source=pwa_install",
-  "iconUrl": "https://ugv-controller.vercel.app/android-chrome-512x512.png",
-  "maskableIconUrl": "https://ugv-controller.vercel.app/maskable_icon.png",
+  "iconUrl": "https://ugv-controller.vercel.app/icon.png",
+  "maskableIconUrl": "https://ugv-controller.vercel.app/icon.png",
   "splashScreenFadeOutDuration": 300,
   "signingKey": {
     "path": "/home/tnfssc/Coding/UAV/IITH_EE5161_Jan2022/codes/esp-ugv-4/app/android.keystore",
@@ -34,7 +34,7 @@
   "orientation": "default",
   "fingerprints": [
     {
-      "value": "4C:81:6D:85:29:9F:3E:C3:84:4E:54:1A:86:10:5A:2A:B8:A2:0E:EF:F9:40:99:25:01:71:02:C0:7E:2C:34:1A"
+      "value": "EB:CA:77:D8:0B:50:F0:53:28:EE:DB:C4:4D:CD:89:2A:AE:2D:E4:CF:1F:CF:5A:EB:C9:3F:27:C0:1C:C6:EC:62"
     }
   ],
   "additionalTrustedOrigins": [],

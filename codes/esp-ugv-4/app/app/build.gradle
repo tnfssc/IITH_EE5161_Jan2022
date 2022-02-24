@@ -21,7 +21,7 @@ plugins {
 }
 
 def twaManifest = [
-    applicationId: 'app.sharath.ugvcontroller',
+    applicationId: 'app.vercel.ugv_controller.twa',
     hostName: 'ugv-controller.vercel.app', // The domain being opened in the TWA.
     launchUrl: '/?utm_source=pwa_install', // The start path for the TWA. Must be relative to the domain.
     name: 'UGV controller', // The application name.
@@ -52,7 +52,7 @@ def twaManifest = [
 android {
     compileSdkVersion 31
     defaultConfig {
-        applicationId "app.sharath.ugvcontroller"
+        applicationId "app.vercel.ugv_controller.twa"
         minSdkVersion 19
         targetSdkVersion 31
         versionCode 2

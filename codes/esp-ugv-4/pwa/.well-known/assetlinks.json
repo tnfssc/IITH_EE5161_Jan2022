@@ -3,9 +3,9 @@
     "relation": ["delegate_permission/common.handle_all_urls"],
     "target": {
       "namespace": "android_app",
-      "package_name": "app.sharath.ugvcontroller",
+      "package_name": "app.vercel.ugv_controller.twa",
       "sha256_cert_fingerprints": [
-        "4C:81:6D:85:29:9F:3E:C3:84:4E:54:1A:86:10:5A:2A:B8:A2:0E:EF:F9:40:99:25:01:71:02:C0:7E:2C:34:1A"
+        "EB:CA:77:D8:0B:50:F0:53:28:EE:DB:C4:4D:CD:89:2A:AE:2D:E4:CF:1F:CF:5A:EB:C9:3F:27:C0:1C:C6:EC:62"
       ]
     }
   }
