@@ -11,25 +11,25 @@ app.get("/", (req, res) => {
 });
 
 app.post("/forward", (req, res) => {
-  client.send(Buffer.from("forward"), 0, 5, process.env.PORT, process.env.HOST, err =>
+  client.send(Buffer.from("forward"), 0, 5, process.env.ESP_PORT, process.env.ESP_IP, err =>
     err ? res.status(500).send(err) : res.status(200).send("ok")
   );
 });
 
 app.post("/backward", (req, res) => {
-  client.send(Buffer.from("backward"), 0, 5, process.env.PORT, process.env.HOST, err =>
+  client.send(Buffer.from("backward"), 0, 5, process.env.ESP_PORT, process.env.ESP_IP, err =>
     err ? res.status(500).send(err) : res.status(200).send("ok")
   );
 });
 
 app.post("/right", (req, res) => {
-  client.send(Buffer.from("right"), 0, 5, process.env.PORT, process.env.HOST, err =>
+  client.send(Buffer.from("right"), 0, 5, process.env.ESP_PORT, process.env.ESP_IP, err =>
     err ? res.status(500).send(err) : res.status(200).send("ok")
   );
 });
 
 app.post("/left", (req, res) => {
-  client.send(Buffer.from("left"), 0, 5, process.env.PORT, process.env.HOST, err =>
+  client.send(Buffer.from("left"), 0, 5, process.env.ESP_PORT, process.env.ESP_IP, err =>
     err ? res.status(500).send(err) : res.status(200).send("ok")
   );
 });
@@ -38,4 +38,6 @@ const httpsServer = https.createServer(
   { key: fs.readFileSync("./key.pem", "utf8"), cert: fs.readFileSync("./cert.pem", "utf8"), passphrase: "123456" },
   app
 );
-httpsServer.listen(8443);
+httpsServer.listen(8443, "0.0.0.0", () => {
+  console.log("HTTPS Server running on port 8443");
+});
