@@ -4,8 +4,8 @@
 #include <AsyncUDP.h>
 #include <esp32PWMUtilities.h>
 
-const char *ssid = "zorin-os";
-const char *password = "33333333";
+const char *ssid = "tnfsscph1";
+const char *password = "22222222";
 
 AsyncUDP udp;
 
@@ -27,8 +27,8 @@ void moveForward()
   Motor1.moveMotor(2.55 * 100);
   Motor2.moveMotor(2.55 * 100);
   delay(250);
-  lock = false;
   stop();
+  lock = false;
 }
 void moveBackward()
 {
@@ -38,8 +38,8 @@ void moveBackward()
   Motor1.moveMotor(-2.55 * 100);
   Motor2.moveMotor(-2.55 * 100);
   delay(250);
-  lock = false;
   stop();
+  lock = false;
 }
 void moveRight()
 {
@@ -49,8 +49,8 @@ void moveRight()
   Motor1.moveMotor(2.55 * 100);
   Motor2.moveMotor(-2.55 * 100);
   delay(250);
-  lock = false;
   stop();
+  lock = false;
 }
 void moveLeft()
 {
@@ -60,8 +60,8 @@ void moveLeft()
   Motor1.moveMotor(-2.55 * 100);
   Motor2.moveMotor(2.55 * 100);
   delay(250);
-  lock = false;
   stop();
+  lock = false;
 }
 
 void setup()
@@ -89,6 +89,7 @@ void setup()
     udp.onPacket([](AsyncUDPPacket packet)
                  {
       String str = (char *)packet.data();
+      str = str.substring(0, 4);
       if (str.compareTo("forw") == 0)
       {
         moveForward();
