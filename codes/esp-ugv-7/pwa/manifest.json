@@ -1,0 +1,22 @@
+{
+  "name": "UGV controller",
+  "short_name": "UGV",
+  "display": "standalone",
+  "start_url": "./?utm_source=pwa_install",
+  "scope": ".",
+  "theme_color": "#000",
+  "background_color": "#000",
+  "icons": [
+    {
+      "src": "icon.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    },
+    {
+      "src": "icon.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}

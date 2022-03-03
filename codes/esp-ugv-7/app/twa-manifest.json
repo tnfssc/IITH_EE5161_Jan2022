@@ -1,0 +1,43 @@
+{
+  "packageId": "app.vercel.ugv_controller.twa",
+  "host": "ugv-controller.vercel.app",
+  "name": "UGV controller",
+  "launcherName": "UGV",
+  "display": "standalone",
+  "themeColor": "#000000",
+  "navigationColor": "#000000",
+  "navigationColorDark": "#000000",
+  "navigationDividerColor": "#000000",
+  "navigationDividerColorDark": "#000000",
+  "backgroundColor": "#000000",
+  "enableNotifications": true,
+  "startUrl": "/?utm_source=pwa_install",
+  "iconUrl": "https://ugv-controller.vercel.app/icon.png",
+  "maskableIconUrl": "https://ugv-controller.vercel.app/icon.png",
+  "splashScreenFadeOutDuration": 300,
+  "signingKey": {
+    "path": "/home/tnfssc/Coding/UAV/IITH_EE5161_Jan2022/codes/esp-ugv-4/app/android.keystore",
+    "alias": "android"
+  },
+  "appVersionName": "4",
+  "appVersionCode": 4,
+  "shortcuts": [],
+  "generatorApp": "bubblewrap-cli",
+  "webManifestUrl": "https://ugv-controller.vercel.app/manifest.json",
+  "fallbackType": "customtabs",
+  "features": {},
+  "alphaDependencies": {
+    "enabled": false
+  },
+  "enableSiteSettingsShortcut": true,
+  "isChromeOSOnly": false,
+  "orientation": "default",
+  "fingerprints": [
+    {
+      "value": "EB:CA:77:D8:0B:50:F0:53:28:EE:DB:C4:4D:CD:89:2A:AE:2D:E4:CF:1F:CF:5A:EB:C9:3F:27:C0:1C:C6:EC:62"
+    }
+  ],
+  "additionalTrustedOrigins": [],
+  "retainedBundles": [],
+  "appVersion": "4"
+}

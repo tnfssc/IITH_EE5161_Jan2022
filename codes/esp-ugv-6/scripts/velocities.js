@@ -21,12 +21,14 @@ const velocities = [
 
 for (let i = 1; i < data.length - 1; i++) {
   const timetaken = data[i].time - velocities[velocities.length - 1].time;
-  const accX =
-    data[i].accX * Math.cos((Math.PI / 2) * (angles[i].angleZ / rightAngle)) +
-    data[i].accY * Math.sin((Math.PI / 2) * (angles[i].angleZ / rightAngle));
-  const accY =
-    data[i].accY * Math.cos((Math.PI / 2) * (angles[i].angleZ / rightAngle)) -
-    data[i].accX * Math.sin((Math.PI / 2) * (angles[i].angleZ / rightAngle));
+  // const accX =
+  //   data[i].accX * Math.cos((Math.PI / 2) * (angles[i].angleZ / rightAngle)) +
+  //   data[i].accY * Math.sin((Math.PI / 2) * (angles[i].angleZ / rightAngle));
+  // const accY =
+  //   data[i].accY * Math.cos((Math.PI / 2) * (angles[i].angleZ / rightAngle)) -
+  //   data[i].accX * Math.sin((Math.PI / 2) * (angles[i].angleZ / rightAngle));
+  const accX = data[i].accX;
+  const accY = data[i].accY;
   const deltaVelX = accX * timetaken;
   const deltaVelY = accY * timetaken;
   velocities.push({

@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>UGV Controller</title>
+    <meta name="description" content="React App" />
+    <meta name="author" content="tnfssc" />
+  </head>
+  <body>
+    <div id="root"></div>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+    <script src="https://unpkg.com/react@16/umd/react.development.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@16/umd/react-dom.development.js" crossorigin></script>
+    <script src="https://unpkg.com/@mui/material@latest/umd/material-ui.production.min.js" crossorigin></script>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons" />
+    <style>
+      .square {
+        aspect-ratio: 1;
+      }
+    </style>
+    <script type="text/babel">
+      const urls = {
+        forward: "/forward",
+        backward: "/backward",
+        left: "/left",
+        right: "/right",
+      };
+      const sendMovement = async direction => {
+        if (!urls[direction]) alert("Invalid direction!");
+        const res = await fetch(urls[direction]);
+        if (res.status === "200") return true;
+        return false;
+      };
+
+      const { CssBaseline, ThemeProvider, Typography, Container, createTheme, Box, Grid, Button, ButtonBase } =
+        MaterialUI;
+      const GridItem = props => (
+        <Grid item xs={4}>
+          {props.children ? (
+            <ButtonBase
+              className="square"
+              onMouseDown={props.onHold}
+              onMouseUp={props.onRelease}
+              onMouseLeave={props.onRelease}
+              onTouchStart={props.onHold}
+              onTouchEnd={props.onRelease}
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "center",
+                alignItems: "center",
+                width: "100%",
+                border: "solid white 1px",
+                borderRadius: "20%",
+              }}>
+              <Typography>{props.children}</Typography>
+            </ButtonBase>
+          ) : (
+            <React.Fragment></React.Fragment>
+          )}
+        </Grid>
+      );
+      const App = () => {
+        const [holding, setHolding] = React.useState(false);
+        const [direction, setDirection] = React.useState("");
+        const intervalRef = React.useRef(0);
+
+        React.useEffect(() => {
+          if (holding)
+            intervalRef.current = setInterval(() => {
+              sendMovement(direction);
+            }, 250);
+          else clearInterval(intervalRef.current);
+          () => clearInterval(intervalRef.current);
+        }, [holding]);
+
+        const resetState = () => {
+          setHolding(false);
+          setDirection("");
+        };
+
+        const go = dir => {
+          setHolding(true);
+          setDirection(dir);
+        };
+
+        const stop = () => {
+          resetState();
+        };
+
+        return (
+          <Container
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "center",
+              alignItems: "center",
+              width: "100vw",
+              height: "80vh",
+            }}>
+            <Typography variant="h3" padding={4}>
+              UGV Controller
+            </Typography>
+            <Box>
+              <Grid container spacing={2}>
+                <GridItem></GridItem>
+                <GridItem onRelease={stop} onHold={() => go("forward")}>
+                  Forward
+                </GridItem>
+                <GridItem></GridItem>
+
+                <GridItem onRelease={stop} onHold={() => go("left")}>
+                  Left
+                </GridItem>
+                <GridItem></GridItem>
+                <GridItem onRelease={stop} onHold={() => go("right")}>
+                  Right
+                </GridItem>
+
+                <GridItem></GridItem>
+                <GridItem onRelease={stop} onHold={() => go("backward")}>
+                  Back
+                </GridItem>
+                <GridItem></GridItem>
+              </Grid>
+            </Box>
+          </Container>
+        );
+      };
+      ReactDOM.render(
+        <ThemeProvider theme={createTheme({ palette: { mode: "dark" } })}>
+          <CssBaseline />
+          <App />
+        </ThemeProvider>,
+        document.getElementById("root")
+      );
+    </script>
+  </body>
+</html>
