@@ -12,6 +12,7 @@ AsyncUDP udp;
 Motor Motor1;
 Motor Motor2;
 
+// Mutex lock for the motor to avoid race conditions
 static bool lock = false;
 
 void stop()
@@ -21,13 +22,16 @@ void stop()
 }
 void moveForward()
 {
+  // If something is using the motors, don't touch it.
   if (lock)
     return;
+  // Set lock to true to prevent others from using the motors
   lock = true;
   Motor1.moveMotor(2.55 * 100);
   Motor2.moveMotor(2.55 * 100);
   delay(250);
   stop();
+  // Set lock to false to allow others to use the motors
   lock = false;
 }
 void moveBackward()
@@ -83,11 +87,14 @@ void setup()
   Serial.print("IP Address: ");
   Serial.println(WiFi.localIP());
 
+  // Start the UDP server on port 8000
   if (udp.listen(8000))
   {
     Serial.println("UDP Listening");
+    // This function is called when any data is received
     udp.onPacket([](AsyncUDPPacket packet)
                  {
+      // Taking the first 4 characters of the received data and converting to a string
       String str = (char *)packet.data();
       str = str.substring(0, 4);
       if (str.compareTo("forw") == 0)
