@@ -1,10 +1,13 @@
 const fs = require("fs");
 const express = require("express");
+const cors = require("cors");
 const https = require("https");
 const client = require("dgram").createSocket("udp4");
 require("dotenv").config();
 
 const app = express();
+
+app.use(cors());
 
 app.get("/", (req, res) => {
   res.redirect("https://ugv-controller.vercel.app/");
