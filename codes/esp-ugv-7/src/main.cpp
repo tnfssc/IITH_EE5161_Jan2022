@@ -4,42 +4,63 @@
 #include <AsyncUDP.h>
 #include <esp32PWMUtilities.h>
 
-const char *ssid = "beingHuman";
-const char *password = "1234qwer!@#$QWER";
+const char *ssid = "zorin-os";
+const char *password = "33333333";
 
 AsyncUDP udp;
 
 Motor Motor1;
 Motor Motor2;
 
+static bool lock = false;
+
 void stop()
 {
-  delay(250);
   Motor1.lockMotor();
   Motor2.lockMotor();
 }
 void moveForward()
 {
+  if (lock)
+    return;
+  lock = true;
   Motor1.moveMotor(2.55 * 100);
   Motor2.moveMotor(2.55 * 100);
+  delay(250);
+  lock = false;
   stop();
 }
 void moveBackward()
 {
+  if (lock)
+    return;
+  lock = true;
   Motor1.moveMotor(-2.55 * 100);
   Motor2.moveMotor(-2.55 * 100);
+  delay(250);
+  lock = false;
   stop();
 }
 void moveRight()
 {
+  if (lock)
+    return;
+  lock = true;
   Motor1.moveMotor(2.55 * 100);
   Motor2.moveMotor(-2.55 * 100);
+  delay(250);
+  lock = false;
   stop();
 }
 void moveLeft()
 {
+  if (lock)
+    return;
+  lock = true;
   Motor1.moveMotor(-2.55 * 100);
   Motor2.moveMotor(2.55 * 100);
+  delay(250);
+  lock = false;
   stop();
 }
 
@@ -67,8 +88,28 @@ void setup()
     Serial.println("UDP Listening");
     udp.onPacket([](AsyncUDPPacket packet)
                  {
-      Serial.print("UDP Packet Type: ");
-      Serial.write(packet.data(), packet.length()); });
+      String str = (char *)packet.data();
+      if (str.compareTo("forw") == 0)
+      {
+        moveForward();
+      }
+      else if (str.compareTo("back") == 0)
+      {
+        moveBackward();
+      }
+      else if (str.compareTo("righ") == 0)
+      {
+        moveRight();
+      }
+      else if (str.compareTo("left") == 0)
+      {
+        moveLeft();
+      }
+      else
+      {
+        stop();
+      }
+      Serial.println(str); });
   }
   else
   {

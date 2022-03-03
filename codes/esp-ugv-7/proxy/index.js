@@ -14,25 +14,25 @@ app.get("/", (req, res) => {
 });
 
 app.post("/forward", (req, res) => {
-  client.send(Buffer.from("forward"), 0, 5, process.env.ESP_PORT, process.env.ESP_IP, err =>
+  client.send(Buffer.from("forward"), 0, 4, process.env.ESP_PORT, process.env.ESP_IP, err =>
     err ? res.status(500).send(err) : res.status(200).send("ok")
   );
 });
 
 app.post("/backward", (req, res) => {
-  client.send(Buffer.from("backward"), 0, 5, process.env.ESP_PORT, process.env.ESP_IP, err =>
+  client.send(Buffer.from("backward"), 0, 4, process.env.ESP_PORT, process.env.ESP_IP, err =>
     err ? res.status(500).send(err) : res.status(200).send("ok")
   );
 });
 
 app.post("/right", (req, res) => {
-  client.send(Buffer.from("right"), 0, 5, process.env.ESP_PORT, process.env.ESP_IP, err =>
+  client.send(Buffer.from("right"), 0, 4, process.env.ESP_PORT, process.env.ESP_IP, err =>
     err ? res.status(500).send(err) : res.status(200).send("ok")
   );
 });
 
 app.post("/left", (req, res) => {
-  client.send(Buffer.from("left"), 0, 5, process.env.ESP_PORT, process.env.ESP_IP, err =>
+  client.send(Buffer.from("left"), 0, 4, process.env.ESP_PORT, process.env.ESP_IP, err =>
     err ? res.status(500).send(err) : res.status(200).send("ok")
   );
 });
