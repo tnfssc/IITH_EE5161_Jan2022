@@ -16,7 +16,7 @@ export default function App() {
     if (intervalRef.current) return;
     intervalRef.current = setInterval(() => {
       sendMovement(direction)();
-    }, 100);
+    }, 1);
   };
   const stopMoving = () => {
     if (intervalRef.current) {
