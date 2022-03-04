@@ -1,7 +1,7 @@
 const fs = require("fs");
 
 const data = fs
-  .readFileSync("rightangle.txt", "utf-8")
+  .readFileSync("left1.txt", "utf-8")
   .split(/\r?\n/)
   .map(line => {
     const [time, acc, gyro] = line.split("\t").map(prop => prop.split(": ")[1]);
@@ -35,3 +35,4 @@ for (let i = 1; i < data.length - 1; i++) {
 }
 
 module.exports = Math.abs(angles[angles.length - 1].angleZ);
+console.log(`Right angle value: ${module.exports}`);

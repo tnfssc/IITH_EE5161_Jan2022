@@ -15,9 +15,9 @@ const angles = [
   },
 ];
 
-for (let i = 1; i < data.length - 1; i++) {
+for (let i = 1; i < data.length; i++) {
   const timetaken = data[i].time - angles[angles.length - 1].time;
-  const deltaAngleZ = data[i].gyZ * timetaken;
+  const deltaAngleZ = data[i - 1].gyZ * timetaken;
   angles.push({
     time: data[i].time,
     angleZ: angles[angles.length - 1].angleZ + deltaAngleZ,

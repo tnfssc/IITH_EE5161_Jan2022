@@ -6,7 +6,7 @@
 const char *ssid = "beingHuman";
 const char *password = "1234qwer!@#$QWER";
 
-const auto server_ip = IPAddress(192, 168, 0, 101);
+const auto server_ip = IPAddress(192, 168, 0, 102);
 const auto server_port = 8989;
 
 void initialize_WiFi()

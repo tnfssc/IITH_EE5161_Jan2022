@@ -16,7 +16,7 @@ const max = Math.max(...data.map(({ x, y }) => Math.max(x, y)));
 
 (async () => {
   const image = await chartJSNodeCanvas.renderToBuffer({
-    data: { datasets: [{ data }] },
+    data: { datasets: [{ data, showLine: true }] },
     type: "scatter",
     options: {
       responsive: true,

@@ -13,7 +13,7 @@ const chartJSNodeCanvas = new ChartJSNodeCanvas({ width, height, backgroundColou
 
 (async () => {
   const image = await chartJSNodeCanvas.renderToBuffer({
-    data: { datasets: [{ data }] },
+    data: { datasets: [{ data, showLine: true }] },
     type: "scatter",
     options: {
       responsive: true,
@@ -21,5 +21,5 @@ const chartJSNodeCanvas = new ChartJSNodeCanvas({ width, height, backgroundColou
       borderColor: "black",
     },
   });
-  fs.writeFileSync("./angles.png", image, "base64");
+  fs.writeFileSync("./chart.png", image, "base64");
 })();
