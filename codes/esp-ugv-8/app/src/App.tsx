@@ -1,4 +1,4 @@
-import { Button, Center, SimpleGrid } from "@mantine/core";
+import { Anchor, Button, Center, SimpleGrid } from "@mantine/core";
 import { useEffect, useRef, useState } from "react";
 
 import { CHARACTERISTIC_UUID, SERVICE_UUID } from "./constants";
@@ -59,6 +59,22 @@ export default function App() {
   };
   return (
     <div>
+      {!navigator.bluetooth && (
+        <div>
+          <Center color="red">
+            Bluetooth is not enabled. Enable it using the following flag
+          </Center>
+          <Center color="red" mb="xl">
+            <Anchor
+              href="chrome://flags/#enable-experimental-web-platform-features"
+              target="_blank"
+              rel="noreferrer noopener"
+            >
+              chrome://flags/#enable-experimental-web-platform-features
+            </Anchor>
+          </Center>
+        </div>
+      )}
       <Center mb="xl">
         <Button onClick={handleConnect} disabled={!!device}>
           {device ? `Connected to ${device.name}` : "Connect Bluetooth"}

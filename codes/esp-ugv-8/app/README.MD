@@ -7,5 +7,6 @@ Enable this in your Chrome browser:
 
 ## Commands
 
+- `yarn install`: Install dependencies
 - `yarn dev`: Start the development server.
 - `yarn build`: Build the app for production.
