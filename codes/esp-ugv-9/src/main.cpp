@@ -6,10 +6,7 @@
 #include <Adafruit_Sensor.h>
 
 #include "html.h"
-#include "babel.h"
-#include "material-ui.h"
-#include "react-dom.h"
-#include "react.h"
+#include "chart.h"
 
 Adafruit_MPU6050 mpu;
 
@@ -240,19 +237,14 @@ void setup()
   server.addHandler(&ws);
   server.on("/", HTTP_GET, [](AsyncWebServerRequest *request)
             { request->send(200, "text/html", index_html); });
-  server.on("/babel-min.js", HTTP_GET, [](AsyncWebServerRequest *request)
-            { request->send(200, "text/html", babel_min); });
-  server.on("/material-ui.js", HTTP_GET, [](AsyncWebServerRequest *request)
-            { request->send(200, "text/html", material_ui); });
-  server.on("/react-dom.js", HTTP_GET, [](AsyncWebServerRequest *request)
-            { request->send(200, "text/html", react_dom); });
-  server.on("/react.js", HTTP_GET, [](AsyncWebServerRequest *request)
-            { request->send(200, "text/html", react); });
+  server.on("/chart-min.js", HTTP_GET, [](AsyncWebServerRequest *request)
+            { request->send(200, "text/javascript", chart); });
   server.begin();
 }
 
 void loop()
 {
   ws.cleanupClients();
-  ws.textAll(String("Awesome"));
+  delay(10);
+  send_data_to_server();
 }

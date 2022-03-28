@@ -1,182 +1,156 @@
 #include <ESPAsyncWebServer.h>
 
-const char index_html[] PROGMEM = R"rawliteral(<!DOCTYPE html>
+const char index_html[] PROGMEM = R"rawliteral(
+<!DOCTYPE html>
 <html lang="en">
   <head>
-    <meta charset="utf-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
-    <title>UGV controller</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#000000" />
-    <meta name="description" content="UGV controller" />
-    <meta name="author" content="tnfssc" />
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>UGV Controller</title>
   </head>
-
   <body>
-    <div id="root"></div>
-    <script src="http://localhost:8000/assets/babel.min.js" crossorigin></script>
-    <script src="http://localhost:8000/assets/react.development.js" crossorigin></script>
-    <script src="http://localhost:8000/assets/react-dom.development.js" crossorigin></script>
-    <script src="http://localhost:8000/assets/material-ui.production.min.js" crossorigin></script>
+    <script>
+      let chart = null;
+      let raw_data = [];
+      let collection_on = false;
+      const ws_address = `ws://${window.location.hostname}/ws`;
+      const ws = new WebSocket(ws_address);
+      ws.onopen = () => console.log("Connected to websocket");
+      ws.onmessage = e => collection_on && raw_data.push(e.data);
+      const send = msg => ws.readyState === WebSocket.OPEN && ws.send(msg);
+      const download_data = () => {
+        const a = document.createElement("a");
+        a.href = URL.createObjectURL(new Blob(raw_data));
+        a.download = "data.json";
+        a.click();
+      };
+      let data_processor = (chart, data) => {
+        data.slice(chart.data.datasets[0].data.length).forEach(line => {
+          const [_time, _acc, _gyro] = line.split("\t");
+          const time = _time.split(": ")[1];
+          const [acc_x, acc_y, acc_z] = _acc.split(": ")[1].split(", ");
+          const [gyro_x, gyro_y, gyro_z] = _gyro.split(": ")[1].split(", ");
+          chart.data.datasets[0].data.push({ y: acc_x, x: time });
+          chart.data.datasets[1].data.push({ y: acc_y, x: time });
+          chart.data.datasets[2].data.push({ y: gyro_z, x: time });
+        });
+      };
+      const update_chart = () =>
+        requestAnimationFrame(() => {
+          if (!chart || !data_processor) return requestAnimationFrame(update_chart);
+          data_processor(chart, raw_data);
+          chart.update();
+          requestAnimationFrame(update_chart);
+        });
+      requestAnimationFrame(update_chart);
+    </script>
     <style>
-      .square {
+      body {
+        background-color: #fff;
+        color: #000;
+        font-family: "Roboto", sans-serif;
+        font-size: 1.5rem;
+        margin: 0;
+      }
+
+      #root {
+        width: 100vw;
+        height: 100vh;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .grid {
+        display: grid;
+        max-width: 400px;
+        grid-template-columns: 1fr 1fr 1fr;
+        grid-template-rows: 1fr 1fr 1fr;
+        grid-gap: 20px;
+      }
+
+      .grid > div {
+        width: 100%;
+        height: 100%;
+        background: white;
+        padding: 0.5em;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+
+      .grid > div > button {
+        width: calc(100% - 0.5em);
+        height: calc(100% - 0.5em);
+        background: white;
         aspect-ratio: 1;
+        border: solid black 1px;
+        cursor: pointer;
       }
     </style>
-    <script type="text/babel">
-      const {
-        CssBaseline,
-        ThemeProvider,
-        Typography,
-        Container,
-        createTheme,
-        Box,
-        Grid,
-        Button,
-        ButtonBase,
-        TextField,
-      } = MaterialUI;
-      const GridItem = props => (
-        <Grid item xs={4}>
-          {props.children ? (
-            <ButtonBase
-              className="square"
-              onMouseDown={props.onHold}
-              onMouseUp={props.onRelease}
-              onMouseLeave={props.onRelease}
-              onTouchStart={props.onHold}
-              onTouchEnd={props.onRelease}
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                justifyContent: "center",
-                alignItems: "center",
-                width: "100%",
-                border: "solid white 1px",
-                borderRadius: "20%",
-              }}>
-              <Typography>{props.children}</Typography>
-            </ButtonBase>
-          ) : (
-            <React.Fragment></React.Fragment>
-          )}
-        </Grid>
-      );
-      const App = () => {
-        const [holding, setHolding] = React.useState(false);
-        const [address, setAddress] = React.useState(`ws://${window.location.hostname}/ws`);
-        const [direction, setDirection] = React.useState("");
-        const intervalRef = React.useRef(0);
-        /** @type {[WebSocket]} */
-        const [ws, setWs] = React.useState(new WebSocket(address));
-        const data = React.useRef([]);
+    <div id="root">
+      <div class="grid">
+        <div></div>
+        <div>
+          <button onclick="send('forward')">Forward</button>
+        </div>
+        <div></div>
+        <div>
+          <button onclick="send('left')">Left</button>
+        </div>
+        <div>
+          <button onclick="send('backward')">Backward</button>
+        </div>
+        <div>
+          <button onclick="send('right')">Right</button>
+        </div>
+        <div>
+          <button onclick="collection_on=true">Start</button>
+        </div>
+        <div>
+          <button onclick="download_data()">Download</button>
+        </div>
+        <div>
+          <button onclick="collection_on=false">Stop</button>
+        </div>
+      </div>
+      <div style="position: relative; height:40vh; width:80vw; margin-top: 48px">
+        <canvas id="myChart"></canvas>
+      </div>
+    </div>
 
-        const sendMovement = direction => {
-          if (ws.readyState === WebSocket.OPEN) ws.send(direction);
-        };
-
-        React.useEffect(() => {
-          if (holding)
-            intervalRef.current = setInterval(() => {
-              sendMovement(direction);
-            }, 250);
-          else clearInterval(intervalRef.current);
-          () => clearInterval(intervalRef.current);
-        }, [holding]);
-
-        const resetState = () => {
-          setHolding(false);
-          setDirection("");
-        };
-
-        const go = dir => {
-          setHolding(true);
-          setDirection(dir);
-        };
-
-        const stop = () => {
-          resetState();
-        };
-
-        const handleConnect = () => {
-          if (ws) ws.close();
-          const _ws = new WebSocket(address);
-          _ws.onmessage = e => data.current.push(e.data);
-          setWs(_ws);
-        };
-
-        const handleDownloadData = () => {
-          const a = document.createElement("a");
-          a.style.display = "none";
-          a.href = URL.createObjectURL(new Blob(data.current));
-          a.download = "data.txt";
-          a.click();
-        };
-
-        return (
-          <Container
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              justifyContent: "center",
-              alignItems: "center",
-              width: "100vw",
-              height: "80vh",
-            }}>
-            <Typography variant="h3" padding={4}>
-              UGV Controller
-            </Typography>
-            <Box sx={{ display: "flex" }}>
-              <TextField
-                size="small"
-                placeholder="made by Sharath"
-                label="WebSocket Address"
-                value={address}
-                helperText="Default is the same as the URL"
-                onChange={e => setAddress(e.target.value)}
-                style={{ marginBottom: "1rem" }}
-              />
-              <Button onClick={handleConnect} variant="contained">
-                Connect
-              </Button>
-            </Box>
-            <Button onClick={handleDownloadData} sx={{ marginBottom: 8 }}>
-              Download data
-            </Button>
-            <Box>
-              <Grid container spacing={2}>
-                <GridItem></GridItem>
-                <GridItem onRelease={stop} onHold={() => go("forward")}>
-                  Forward
-                </GridItem>
-                <GridItem></GridItem>
-
-                <GridItem onRelease={stop} onHold={() => go("left")}>
-                  Left
-                </GridItem>
-                <GridItem></GridItem>
-                <GridItem onRelease={stop} onHold={() => go("right")}>
-                  Right
-                </GridItem>
-
-                <GridItem></GridItem>
-                <GridItem onRelease={stop} onHold={() => go("backward")}>
-                  Back
-                </GridItem>
-                <GridItem></GridItem>
-              </Grid>
-            </Box>
-          </Container>
-        );
-      };
-      ReactDOM.render(
-        <ThemeProvider theme={createTheme({ palette: { mode: "dark", background: { default: "#000" } } })}>
-          <CssBaseline />
-          <App />
-        </ThemeProvider>,
-        document.getElementById("root")
-      );
+    <script src="http://localhost:4000/chart.min.js"></script>
+    <script defer>
+      const ctx = document.getElementById("myChart").getContext("2d");
+      chart = new Chart(ctx, {
+        type: "scatter",
+        data: {
+          datasets: [
+            {
+              label: "AccX",
+              data: [],
+              backgroundColor: "red",
+            },
+            {
+              label: "AccY",
+              data: [],
+              backgroundColor: "blue",
+            },
+            {
+              label: "GyroZ",
+              data: [],
+              backgroundColor: "green",
+            },
+          ],
+        },
+        options: {
+          animation: false,
+        },
+      });
     </script>
   </body>
 </html>
+
 )rawliteral";
